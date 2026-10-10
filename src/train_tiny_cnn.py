@@ -1,5 +1,6 @@
-"""Обучение tiny CNN (empty / value) и сравнение с базовыми моделями."""
+"""Обучение tiny CNN (empty / value), выбор порога и сравнение с базовыми моделями."""
 import argparse
+import copy
 import math
 import sys
 from pathlib import Path
@@ -10,9 +11,11 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
 from augment import augment_default
+from choose_threshold import choose_threshold, evaluate_threshold, format_report
 from compare_baselines import evaluate_baselines, print_table
 from datasets.crop_dataset import CropDataset, collate_classify
 from device import pick_device
+from inference import predict_p_empty, write_threshold
 from metrics import binary_report
 from models.tiny_cnn import TinyCNN
 from seed import make_generator, seed_worker, set_seed
@@ -92,6 +95,8 @@ def main() -> None:
     ap.add_argument("--augment", action="store_true", help="аугментация default на train")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--workers", type=int, default=0)
+    ap.add_argument("--min-value-recall", type=float, default=0.99,
+                    help="ограничение на value_recall при выборе порога (на val)")
     ap.add_argument("--max-batches", type=int, default=None, help="ограничить число батчей за эпоху (smoke)")
     ap.add_argument("--overfit-batch", action="store_true", help="только проверка: переобучить один батч")
     ap.add_argument("--out", default="checkpoints/tiny_cnn.pt")
@@ -116,7 +121,7 @@ def main() -> None:
     val_loader = make_loader(val_ds, 64, False, args.seed, args.workers)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
-    best = None
+    best, best_state = None, None
     for epoch in range(1, args.epochs + 1):
         train_ds.set_epoch(epoch)
         tr = run_epoch(model, train_loader, device, optimizer, args.max_batches)
@@ -124,6 +129,7 @@ def main() -> None:
         mark = ""
         if best is None or va["acc"] > best["acc"]:
             best = {**va, "epoch": epoch}
+            best_state = copy.deepcopy(model.state_dict())
             out = Path(args.out)
             out.parent.mkdir(parents=True, exist_ok=True)
             torch.save({"model_state": model.state_dict(), "classes": ["value", "empty"],
@@ -138,6 +144,19 @@ def main() -> None:
     rows = evaluate_baselines(args.data_dir, "val")
     rows.append({"model": f"tiny CNN (эпоха {best['epoch']})", **{k: best[k] for k in ("acc", "value_recall", "empty_recall")}})
     print_table(rows, "val")
+
+    # Порог: выбираем на val, итоговые числа смотрим на test.
+    model.load_state_dict(best_state)
+    val_p, val_y = predict_p_empty(model, val_ds, device)
+    test_p, test_y = predict_p_empty(model, CropDataset(args.data_dir, "test"), device)
+    chosen = choose_threshold(val_p, val_y, args.min_value_recall)
+    val_rep = evaluate_threshold(val_p, val_y, chosen["threshold"])
+    test_rep = evaluate_threshold(test_p, test_y, chosen["threshold"])
+    write_threshold(args.out, chosen, val_rep, test_rep)
+    print(f"\nпорог выбран на val: {chosen['threshold']:.4f} (ограничение: value_recall >= {args.min_value_recall})")
+    print(format_report("val", val_rep))
+    print(format_report("test", test_rep))
+    print(f"порог записан в {args.out}")
 
 
 if __name__ == "__main__":

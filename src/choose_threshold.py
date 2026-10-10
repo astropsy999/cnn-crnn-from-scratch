@@ -1,7 +1,4 @@
-"""Урок 8 — «напиши сам»: порог решения для empty-детектора.
-
-Задача: реализовать choose_threshold (ниже). Запуск тестов: python -m pytest tests/test_choose_threshold.py -q
-
+"""Порог решения для empty-детектора.
 
 Модель отдаёт P(empty). Кроп объявляется пустым, если P(empty) >= порога.
 Пропустить настоящее значение дороже, чем прочитать лишнюю пустую клетку, поэтому порог
@@ -36,31 +33,45 @@ def check_inputs(p_empty, labels, min_value_recall: float) -> tuple[np.ndarray, 
     return p, y
 
 
-# --- TODO: напиши сам ------------------------------------------------------------
-
 def choose_threshold(p_empty, labels, min_value_recall: float = 0.99) -> dict:
     """Порог по P(empty): максимум empty_recall при value_recall >= min_value_recall.
 
     Кроп объявляется пустым, если p_empty >= threshold.
-
-    Требования (их проверяют тесты tests/test_choose_threshold.py):
-      1. Среди порогов, для которых value_recall >= min_value_recall, выбирается тот,
-         где empty_recall максимален. Кандидаты: все различные значения p_empty и ещё одно число
-         чуть выше максимума (порог, при котором пустым не объявляется ничего).
-      2. Из нескольких порогов с одинаковым empty_recall берётся НАИБОЛЬШИЙ:
-         он безопаснее для value_recall.
-      3. Возвращаемый порог лежит посередине между выбранным кандидатом и ближайшим меньшим
-         значением p_empty (чтобы не «прилипать» к конкретному кропу). Если пустым не объявляется
-         ничего, возвращается сам кандидат «чуть выше максимума».
-      4. Возвращаемые value_recall и empty_recall посчитаны по ВОЗВРАЩЁННОМУ порогу
-         (value: p_empty < порога; empty: p_empty >= порога).
-      5. Некорректные входы дают ValueError: для этого уже есть готовая функция check_inputs.
-
+    Из нескольких порогов с одинаковым empty_recall берётся НАИБОЛЬШИЙ (он безопаснее для value).
+    Возвращаемый порог лежит посередине между двумя соседними значениями p_empty,
+    чтобы не «прилипать» к конкретному кропу.
     Возвращает {"threshold", "value_recall", "empty_recall", "n_value", "n_empty", "min_value_recall"}.
-    Подсказка: np.searchsorted(отсортированные_оценки, кандидаты, side="left") считает,
-    сколько оценок строго меньше каждого кандидата.
     """
-    raise NotImplementedError
+    p, y = check_inputs(p_empty, labels, min_value_recall)
+    value_scores = np.sort(p[y == 0])
+    empty_scores = np.sort(p[y == 1])
+    n_value, n_empty = len(value_scores), len(empty_scores)
+
+    scores = np.unique(p)
+    above_max = np.nextafter(scores[-1], np.inf)        # порог, при котором пустым не объявляется ничего
+    candidates = np.append(scores, above_max)
+    value_recall = np.searchsorted(value_scores, candidates, side="left") / n_value
+    empty_recall = (n_empty - np.searchsorted(empty_scores, candidates, side="left")) / n_empty
+
+    feasible = value_recall >= min_value_recall - 1e-9
+    best_empty = empty_recall[feasible].max()
+    best = int(np.flatnonzero(feasible & (empty_recall == best_empty))[-1])
+
+    chosen = float(candidates[best])
+    if best == len(candidates) - 1:
+        threshold = chosen
+    else:
+        lower = scores[scores < chosen]
+        threshold = float((chosen + (lower.max() if len(lower) else 0.0)) / 2)
+
+    return {
+        "threshold": threshold,
+        "value_recall": float((value_scores < threshold).mean()),
+        "empty_recall": float((empty_scores >= threshold).mean()),
+        "n_value": int(n_value),
+        "n_empty": int(n_empty),
+        "min_value_recall": float(min_value_recall),
+    }
 
 
 # --- Дальше всё готово: оценка порога, чтение оценок, командная строка ------------------

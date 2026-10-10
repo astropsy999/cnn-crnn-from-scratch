@@ -21,3 +21,9 @@ experiments/aug_printed.png
 experiments/aug_rot180.png
 experiments/aug_rot10.png
 checkpoints/
+experiments/threshold_curve.png
+experiments/threshold_curve_full.png
+experiments/threshold_curve_smoke.png
+experiments/tiny_cnn_scores.npz
+experiments/surrogate_scores.npz
+experiments/smoke_scores.npz

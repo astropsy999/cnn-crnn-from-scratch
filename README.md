@@ -4,14 +4,14 @@
 
 - Статьи: [stuzhuk.page](https://stuzhuk.page/ru/blog/) / [stuzhuklab.ru](https://stuzhuklab.ru/blog/) (серия `cnn-crnn-from-scratch`)
 - Состояние после каждого урока — **git-тег** `lesson-01`, `lesson-02`, …
-- Актуальный снимок: [`lesson-07`](https://github.com/astropsy999/cnn-crnn-from-scratch/tree/lesson-07)
+- Актуальный снимок: [`lesson-08`](https://github.com/astropsy999/cnn-crnn-from-scratch/tree/lesson-08)
 
 ## Быстрый старт
 
 ```bash
 git clone https://github.com/astropsy999/cnn-crnn-from-scratch.git
 cd cnn-crnn-from-scratch
-git checkout lesson-07
+git checkout lesson-08
 
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\Activate.ps1
@@ -98,4 +98,20 @@ python -m pytest tests/test_conv_from_scratch.py tests/test_baselines_simple.py 
 ```
 
 Подробнее: [`lessons/07.md`](lessons/07.md).
+
+### Урок 8 — порог решения
+
+```bash
+# упражнение
+git checkout lesson-08-start
+python -m pytest tests/test_choose_threshold.py -q
+
+# решение
+git checkout lesson-08
+python src/train_tiny_cnn.py --data-dir data/processed --epochs 10 --out checkpoints/tiny_cnn.pt
+python src/choose_threshold.py --checkpoint checkpoints/tiny_cnn.pt --data-dir data/processed --save-scores experiments/tiny_cnn_scores.npz
+python -m pytest tests/test_choose_threshold.py tests/test_stats.py tests/test_threshold_report.py -q
+```
+
+Подробнее: [`lessons/08.md`](lessons/08.md).
 
