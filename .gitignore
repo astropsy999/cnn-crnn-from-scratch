@@ -15,3 +15,4 @@ data/synthetic-smoke/
 data/processed-smoke/
 experiments/samples_grid.png
 experiments/samples_grid_smoke.png
+data/processed-leaky/

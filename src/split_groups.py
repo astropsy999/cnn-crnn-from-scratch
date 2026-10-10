@@ -1,7 +1,4 @@
-"""Урок 5 — «напиши сам»: сплит train/val/test ПО ГРУППАМ (листам), а не по кропам.
-
-Задача: реализовать split_groups (ниже). Запуск тестов: python -m pytest tests/test_split_groups.py -q
-
+"""Сплит train/val/test ПО ГРУППАМ (листам), а не по кропам.
 
 Зачем: кропы одного листа похожи друг на друга (перо, бумага, сканер) и часто повторяют
 значения. Если часть листа попала в train, а часть в val, модель «узнаёт» лист, а не учится
@@ -31,27 +28,27 @@ def check_ratios(ratios: dict) -> None:
         raise ValueError(f"доли должны давать в сумме 1, получено {sum(ratios.values())}")
 
 
-# --- TODO: напиши сам ------------------------------------------------------------
-
 def split_groups(strata: dict[str, str], ratios: dict[str, float], seed: int = 42) -> dict[str, list[str]]:
     """Делит группы на train/val/test, сохраняя пропорции страт.
 
     strata: {group_id: страта}; ratios: {"train": .., "val": .., "test": ..}.
-
-    Требования (их проверяют тесты tests/test_split_groups.py):
-      1. Каждая группа попадает ровно в один сплит; ничего не теряется и не добавляется.
-      2. Результат детерминирован и НЕ зависит от порядка групп во входном словаре
-         (подсказка: сначала отсортируйте группы).
-      3. Разные seed дают разные разбиения.
-      4. Деление стратифицировано: внутри каждой страты группы перемешиваются
-         (используйте random.Random(f"{seed}:{страта}")), затем
-         val получает round(n * ratios["val"]) групп, test — round(n * ratios["test"]),
-         остальное — train. Страта из одной группы целиком уходит в train.
-      5. Некорректные ratios (нет ключей train/val/test, отрицательные значения,
-         сумма не равна 1) дают ValueError. Готовая функция check_ratios уже есть выше.
-      6. Возвращает {"train": [...], "val": [...], "test": [...]}, списки отсортированы.
+    Внутри каждой страты группы перемешиваются отдельным генератором
+    random.Random(f"{seed}:{страта}"), затем val получает round(n * доля_val) групп,
+    test — round(n * доля_test), остальное — train.
+    Возвращает {"train": [...], "val": [...], "test": [...]}, списки отсортированы.
     """
-    raise NotImplementedError
+    check_ratios(ratios)
+    result: dict[str, list[str]] = {name: [] for name in SPLITS}
+    for stratum in sorted(set(strata.values())):
+        groups = sorted(g for g, s in strata.items() if s == stratum)
+        random.Random(f"{seed}:{stratum}").shuffle(groups)
+        n = len(groups)
+        n_val = round(n * ratios["val"])
+        n_test = round(n * ratios["test"])
+        result["val"] += groups[:n_val]
+        result["test"] += groups[n_val:n_val + n_test]
+        result["train"] += groups[n_val + n_test:]
+    return {name: sorted(ids) for name, ids in result.items()}
 
 
 # --- Дальше всё готово: чтение данных, страты, запись файлов ------------------------

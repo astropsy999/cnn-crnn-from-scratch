@@ -4,14 +4,14 @@
 
 - Статьи: [stuzhuk.page](https://stuzhuk.page/ru/blog/) / [stuzhuklab.ru](https://stuzhuklab.ru/blog/) (серия `cnn-crnn-from-scratch`)
 - Состояние после каждого урока — **git-тег** `lesson-01`, `lesson-02`, …
-- Актуальный снимок: [`lesson-04`](https://github.com/astropsy999/cnn-crnn-from-scratch/tree/lesson-04)
+- Актуальный снимок: [`lesson-05`](https://github.com/astropsy999/cnn-crnn-from-scratch/tree/lesson-05)
 
 ## Быстрый старт
 
 ```bash
 git clone https://github.com/astropsy999/cnn-crnn-from-scratch.git
 cd cnn-crnn-from-scratch
-git checkout lesson-04
+git checkout lesson-05
 
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\Activate.ps1
@@ -63,4 +63,16 @@ python -m pytest tests/test_data_source_contract.py tests/test_synthetic_generat
 ```
 
 Подробнее: [`lessons/04.md`](lessons/04.md).
+
+### Урок 5 — сплит по листам
+
+```bash
+# нужны data/processed из урока 4
+python src/split_groups.py --src data/processed --out data/processed --val-ratio 0.15 --test-ratio 0.15
+python src/verify_split.py --data-dir data/processed
+python experiments/leakage_demo.py
+python -m pytest tests/test_split_groups.py tests/test_baselines.py tests/test_verify_split.py -q
+```
+
+Подробнее: [`lessons/05.md`](lessons/05.md).
 
