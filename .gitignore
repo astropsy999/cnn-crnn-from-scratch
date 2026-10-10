@@ -16,3 +16,7 @@ data/processed-smoke/
 experiments/samples_grid.png
 experiments/samples_grid_smoke.png
 data/processed-leaky/
+experiments/aug_default.png
+experiments/aug_printed.png
+experiments/aug_rot180.png
+experiments/aug_rot10.png

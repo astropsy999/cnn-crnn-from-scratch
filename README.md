@@ -4,14 +4,14 @@
 
 - Статьи: [stuzhuk.page](https://stuzhuk.page/ru/blog/) / [stuzhuklab.ru](https://stuzhuklab.ru/blog/) (серия `cnn-crnn-from-scratch`)
 - Состояние после каждого урока — **git-тег** `lesson-01`, `lesson-02`, …
-- Актуальный снимок: [`lesson-05`](https://github.com/astropsy999/cnn-crnn-from-scratch/tree/lesson-05)
+- Актуальный снимок: [`lesson-06`](https://github.com/astropsy999/cnn-crnn-from-scratch/tree/lesson-06)
 
 ## Быстрый старт
 
 ```bash
 git clone https://github.com/astropsy999/cnn-crnn-from-scratch.git
 cd cnn-crnn-from-scratch
-git checkout lesson-05
+git checkout lesson-06
 
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\Activate.ps1
@@ -75,4 +75,15 @@ python -m pytest tests/test_split_groups.py tests/test_baselines.py tests/test_v
 ```
 
 Подробнее: [`lessons/05.md`](lessons/05.md).
+
+### Урок 6 — Dataset и аугментации
+
+```bash
+python src/make_demo_crops.py --out data/synthetic/raw
+python experiments/show_augment_grid.py --image data/synthetic/raw/sample_7_3.png --style default --out experiments/aug_default.png
+python experiments/show_augment_grid.py --image data/synthetic/raw/sample_12_14.png --style printed --out experiments/aug_printed.png
+python -m pytest tests/test_augment.py tests/test_dataset.py -q
+```
+
+Подробнее: [`lessons/06.md`](lessons/06.md).
 
