@@ -1,0 +1,7 @@
+# Pinned from a clean macOS arm64 venv (Python 3.14). CPU path is enough for the course.
+torch==2.14.1
+numpy==2.5.3
+Pillow==12.3.0
+matplotlib==3.11.2
+PyYAML==6.0.3
+pytest==9.1.1
