@@ -4,14 +4,14 @@
 
 - Статьи: [stuzhuk.page](https://stuzhuk.page/ru/blog/) / [stuzhuklab.ru](https://stuzhuklab.ru/blog/) (серия `cnn-crnn-from-scratch`)
 - Состояние после каждого урока — **git-тег** `lesson-01`, `lesson-02`, …
-- Актуальный снимок: [`lesson-08`](https://github.com/astropsy999/cnn-crnn-from-scratch/tree/lesson-08)
+- Актуальный снимок: [`lesson-09`](https://github.com/astropsy999/cnn-crnn-from-scratch/tree/lesson-09)
 
 ## Быстрый старт
 
 ```bash
 git clone https://github.com/astropsy999/cnn-crnn-from-scratch.git
 cd cnn-crnn-from-scratch
-git checkout lesson-08
+git checkout lesson-09
 
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\Activate.ps1
@@ -114,4 +114,16 @@ python -m pytest tests/test_choose_threshold.py tests/test_stats.py tests/test_t
 ```
 
 Подробнее: [`lessons/08.md`](lessons/08.md).
+
+### Урок 9 — empty-детектор «как в проекте»
+
+```bash
+python src/train_empty_detector.py --config configs/empty-detector.yaml
+python experiments/ablate_imbalance.py --backend logreg --seeds 3
+# полная абляция на сети (долго: 4 варианта × 3 seed)
+python experiments/ablate_imbalance.py --config configs/empty-detector.yaml --seeds 3
+python -m pytest tests/test_config.py tests/test_imbalance.py tests/test_early_stopping.py tests/test_selection.py tests/test_ablation.py tests/test_empty_detector.py tests/test_ablate_harness.py -q
+```
+
+Подробнее: [`lessons/09.md`](lessons/09.md).
 

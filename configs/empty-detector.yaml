@@ -1,0 +1,16 @@
+# Рецепт empty-детектора (урок 9). Ключи проверяются: опечатка даст ошибку, а не тихое игнорирование.
+data_dir: data/processed
+out: checkpoints/empty-detector.pt
+seed: 42
+epochs: 25
+batch_size: 32
+lr: 0.001
+weight_decay: 0.0001
+patience: 8                 # эпох без улучшения до ранней остановки
+min_value_recall: 0.99      # ограничение при выборе порога (на val)
+imbalance: none          # none | weights | sampler | both  (подтверждено ablate_imbalance.py: победитель none)
+augment: default            # none | default | printed
+channels: [16, 32, 64]
+dropout: 0.2
+workers: 0
+max_batches: null           # ограничить число батчей за эпоху (для smoke)

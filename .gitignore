@@ -27,3 +27,8 @@ experiments/threshold_curve_smoke.png
 experiments/tiny_cnn_scores.npz
 experiments/surrogate_scores.npz
 experiments/smoke_scores.npz
+experiments/ablation*.json
+experiments/ablation/
+data/synthetic-imbalance/
+data/processed-imbalance/
+checkpoints/empty-detector*.pt
