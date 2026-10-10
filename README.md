@@ -4,14 +4,14 @@
 
 - Статьи: [stuzhuk.page](https://stuzhuk.page/ru/blog/) / [stuzhuklab.ru](https://stuzhuklab.ru/blog/) (серия `cnn-crnn-from-scratch`)
 - Состояние после каждого урока — **git-тег** `lesson-01`, `lesson-02`, …
-- Актуальный снимок: [`lesson-06`](https://github.com/astropsy999/cnn-crnn-from-scratch/tree/lesson-06)
+- Актуальный снимок: [`lesson-07`](https://github.com/astropsy999/cnn-crnn-from-scratch/tree/lesson-07)
 
 ## Быстрый старт
 
 ```bash
 git clone https://github.com/astropsy999/cnn-crnn-from-scratch.git
 cd cnn-crnn-from-scratch
-git checkout lesson-06
+git checkout lesson-07
 
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\Activate.ps1
@@ -86,4 +86,16 @@ python -m pytest tests/test_augment.py tests/test_dataset.py -q
 ```
 
 Подробнее: [`lessons/06.md`](lessons/06.md).
+
+### Урок 7 — Tiny CNN
+
+```bash
+python src/conv_from_scratch.py
+python src/compare_baselines.py --data-dir data/processed
+python src/train_tiny_cnn.py --data-dir data/processed --overfit-batch
+python src/train_tiny_cnn.py --data-dir data/processed --epochs 10 --out checkpoints/tiny_cnn.pt
+python -m pytest tests/test_conv_from_scratch.py tests/test_baselines_simple.py tests/test_metrics.py tests/test_tiny_cnn.py -q
+```
+
+Подробнее: [`lessons/07.md`](lessons/07.md).
 

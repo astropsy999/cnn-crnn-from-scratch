@@ -20,3 +20,4 @@ experiments/aug_default.png
 experiments/aug_printed.png
 experiments/aug_rot180.png
 experiments/aug_rot10.png
+checkpoints/
