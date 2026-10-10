@@ -9,7 +9,7 @@ from device import pick_device
 
 
 def main() -> None:
-    device = pick_device()
+    device = pick_device()  # cuda → mps → cpu
     print(f"Python      : {platform.python_version()}")
     print(f"Platform    : {platform.platform()}")
     print(f"torch       : {torch.__version__}")
@@ -18,8 +18,8 @@ def main() -> None:
     print(f"Device      : {device}")
     print(f"CPU threads : {torch.get_num_threads()}")
 
-    x = torch.randn(2, 3, device=device)
-    y = x @ x.T
+    x = torch.randn(2, 3, device=device)  # маленький тензор на выбранном устройстве
+    y = x @ x.T  # матричное умножение: дымовой тест «устройство считает»
     assert y.shape == (2, 2), "неожиданная форма результата"
     print(f"Tensor OK   : shape={tuple(x.shape)}, device={x.device}")
 

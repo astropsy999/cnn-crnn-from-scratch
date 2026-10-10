@@ -13,25 +13,25 @@ def set_seed(seed: int = 42, deterministic: bool = False) -> None:
     алгоритмы. На GPU это может замедлить обучение или бросить ошибку для
     операций без детерминированной версии.
     """
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
+    random.seed(seed)  # стандартная библиотека (аугментации позже)
+    np.random.seed(seed)  # генерация данных и часть аугментаций
+    torch.manual_seed(seed)  # веса, dropout, перемешивание на CPU
     torch.cuda.manual_seed_all(seed)  # без CUDA вызов безвреден
     if deterministic:
-        # Переменная должна быть задана до первой операции на CUDA.
+        # переменная должна быть задана до первой операции на CUDA
         os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
-        torch.use_deterministic_algorithms(True)
+        torch.use_deterministic_algorithms(True)  # только детерминированные алгоритмы
 
 
 def make_generator(seed: int) -> torch.Generator:
     """Отдельный генератор для DataLoader(shuffle=True, generator=...)."""
     g = torch.Generator()
-    g.manual_seed(seed)
+    g.manual_seed(seed)  # свой генератор под перемешивание батчей
     return g
 
 
 def seed_worker(worker_id: int) -> None:
     """worker_init_fn для DataLoader: у каждого воркера свой, но воспроизводимый seed."""
-    worker_seed = torch.initial_seed() % 2**32
+    worker_seed = torch.initial_seed() % 2**32  # уникальный, но воспроизводимый seed воркера
     np.random.seed(worker_seed)
     random.seed(worker_seed)
