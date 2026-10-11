@@ -4,14 +4,14 @@
 
 - Статьи: [stuzhuk.page](https://stuzhuk.page/ru/blog/) / [stuzhuklab.ru](https://stuzhuklab.ru/blog/) (серия `cnn-crnn-from-scratch`)
 - Состояние после каждого урока — **git-тег** `lesson-01`, `lesson-02`, …
-- Актуальный снимок: [`lesson-09`](https://github.com/astropsy999/cnn-crnn-from-scratch/tree/lesson-09)
+- Актуальный снимок: [`lesson-10`](https://github.com/astropsy999/cnn-crnn-from-scratch/tree/lesson-10)
 
 ## Быстрый старт
 
 ```bash
 git clone https://github.com/astropsy999/cnn-crnn-from-scratch.git
 cd cnn-crnn-from-scratch
-git checkout lesson-09
+git checkout lesson-10
 
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\Activate.ps1
@@ -126,4 +126,19 @@ python -m pytest tests/test_config.py tests/test_imbalance.py tests/test_early_s
 ```
 
 Подробнее: [`lessons/09.md`](lessons/09.md).
+
+### Урок 10 — CTC руками
+
+```bash
+git checkout lesson-10-start
+python -m pytest tests/test_ctc.py -q
+
+git checkout lesson-10
+python src/ctc_from_scratch.py
+python src/understand_ctc_loss.py
+python src/greedy_decode.py
+python -m pytest tests/test_ctc.py tests/test_ctc_forward.py tests/test_greedy_decode.py tests/test_ctc_torch.py -q
+```
+
+Подробнее: [`lessons/10.md`](lessons/10.md).
 
