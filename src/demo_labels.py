@@ -23,11 +23,28 @@ def main() -> None:
     print()
     for raw, task in CASES:
         norm = normalize_label(raw)
-        ok, reason = validate_format(norm, task)
+        try:
+            ok, reason = validate_format(norm, task)
+        except NotImplementedError:
+            print(
+                "TODO в src/alphabet.py ещё не дописаны "
+                "(validate_format / encode_text / FORMAT_PATTERNS).\n"
+                "Сначала доведите тесты до зелёных:\n"
+                "  python -m pytest tests/test_alphabet.py -q\n"
+                "Демо — после 12 passed (или смотрите эталон lesson-03)."
+            )
+            raise SystemExit(1) from None
         head = f"{raw!r:<11} {task:<12} → {norm!r:<10}"
         if ok:
-            idx = encode_text(norm, task)
-            back = decode_indices(idx, task)
+            try:
+                idx = encode_text(norm, task)
+                back = decode_indices(idx, task)
+            except NotImplementedError:
+                print(
+                    "TODO в src/alphabet.py ещё не дописаны (encode_text / decode_indices).\n"
+                    "Сначала: python -m pytest tests/test_alphabet.py -q"
+                )
+                raise SystemExit(1) from None
             assert back == norm
             print(f"{head} → {idx} → {back!r}  OK")
         else:

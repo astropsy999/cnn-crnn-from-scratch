@@ -44,9 +44,11 @@ python -m pytest tests/test_image_to_tensor.py -q
 
 ```bash
 git checkout lesson-03-start   # упражнение «напиши сам»
-python -m pytest tests/test_alphabet.py -q
+python -m pytest tests/test_alphabet.py -q   # сначала тесты и TODO
+# после 12 passed:
+python src/demo_labels.py
 
-git checkout lesson-03
+git checkout lesson-03         # эталон
 python src/demo_labels.py
 python -m pytest tests/test_alphabet.py -q
 ```
