@@ -38,6 +38,9 @@ def autocontrast_safe(img: Image.Image, min_range: int = MIN_CONTRAST_RANGE) -> 
     шум бумаги превратится в «текст».
     """
     lo, hi = img.getextrema()  # мин/макс яркости в кропе
+    # stubs Pillow: для RGB extrema — кортеж пар; для L — (lo, hi).
+    if not isinstance(lo, (int, float)) or not isinstance(hi, (int, float)):
+        raise TypeError(f"нужен одноканальный L, режим={img.mode!r}")
     if hi - lo < min_range:
         return img  # почти однородно: не раздуваем шум бумаги
     return ImageOps.autocontrast(img)  # растягиваем контраст до 0..255

@@ -120,6 +120,7 @@ def test_clean_empty_crops_are_left_alone_by_contrast_guard():
     for r in read_index(root):
         if r["kind"] == "empty" and r["empty_kind"] == "clean" and not styles[r["sheet"]]["border"]:
             lo, hi = Image.open(root / r["file"]).getextrema()
+            assert isinstance(lo, (int, float)) and isinstance(hi, (int, float))
             assert hi - lo < MIN_CONTRAST_RANGE, (r["file"], hi - lo)
             checked += 1
     assert checked >= 20

@@ -3,10 +3,11 @@ import argparse
 import json
 import sys
 from collections import Counter, defaultdict
+from collections.abc import Sequence
 from pathlib import Path
 
 from alphabet import num_classes
-from data_sources.base import check_meta, check_records
+from data_sources.base import Record, check_meta, check_records
 from data_sources.synthetic import SyntheticSource
 from patterns import label_pattern
 
@@ -21,7 +22,7 @@ def build_source(name: str, src: str):
     sys.exit(f"Источник {name!r} подключается позже: public — приложение A2, real — приложение A4.")
 
 
-def repeat_share(records: list[dict]) -> float:
+def repeat_share(records: Sequence[Record]) -> float:
     """Доля value-кропов, чьё значение встречается на том же листе ещё раз."""
     by_group = defaultdict(Counter)
     for r in records:
